@@ -6,6 +6,9 @@
 # almacenar la informacion para que procesarla luego sea mas comodo
 # --------------------------------------------------------------------
 
+from typing import Callable
+
+
 class Command:
     """Inicializa el comando con las caracteristicas que se han
         definido
@@ -42,7 +45,7 @@ class Command:
         self.mnc = mandatory_nested_cmd
         self.options = {}
         self.flags = {}
-        self.nested_cmd = {}
+        self.nested_cmds = {}
         
     def nest_cmd(self, cmd):
         """AAnido un comando en el comando principal
@@ -54,7 +57,7 @@ class Command:
             msg = ("No esta permitido que las opciones tengan " + 
             "otras opciones anidadas")
             raise CmdDefinitionError(msg)
-        self.nested_cmd[cmd.name] = cmd
+        self.nested_cmds[cmd.name] = cmd
    
     def add_option(self, option):
         if type(self) == Option:
@@ -97,16 +100,16 @@ class Flag:
 
         Args:
             name (str): Nombre del flag
-            notCompatibleWithFlags (list, optional): Indica los nombres
+            notcompat_withflags (list, optional): Indica los nombres
                 de los flags con los que no es compatible (no pueden 
                 aparecer juntos en la linea de comandos)
             description (str, optional): Informa de la funcionalidad
                 del flag
         """
-    def __init__(self, name:str, notCompatibleWithFlags:list=[], 
-                 description:str=None):
+    def __init__(self, name:str, description:str=None, 
+                 notcompat_withflags:list=[]):
         self.name = name
-        self.ncwf = notCompatibleWithFlags + [self.name]
+        self.ncwf = notcompat_withflags + [self.name]
         self.description = description
         
     def __str__(self) -> str:
