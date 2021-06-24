@@ -30,10 +30,15 @@ def main():
     try:
         # Procesamos la linea de comandos (CmdLineError)
         args_processed = cli.process_cmdline(sys.argv)
+        # Realizamos unas comprobaciones previas (ProgramError)
+        program.check_dependencies()
+        program.check_platform_updates()
         # Iniciamos el programa
         servplatform(**args_processed)
     except CmdLineError as clErr:
         main_logger.error(f" {clErr}"); exit(1)
+    except ProgramError as err:
+        main_logger.critical(err); exit(1)
     except KeyboardInterrupt:
         main_logger.warning(" Programa interrumpido"); exit(1)
     except Exception as err:

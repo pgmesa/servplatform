@@ -175,12 +175,6 @@ def check_platform_updates():
     producido cambios que se deban actualizar en el programa""" 
     with suppress(Exception):
         register.add("updates", {})
-    # Cambiamos el nvl del logger para que siempre se muestren los
-    # warning
-    root_logger = logging.getLogger()
-    lvl = root_logger.level
-    program_logger.debug(f" Nivel de logger establecido -> {lvl}")
-    root_logger.level = logging.WARNING
     warned = False
     # Detecamos los cambios que se hayan producido fuera del programa
     # de los contenedores
@@ -188,9 +182,6 @@ def check_platform_updates():
     # Detecamos los cambios que se hayan producido fuera del programa
     # de los bridge   
     warned = _check_bridges() or warned
-    # Volvemos a poner el nvl de logger de antes y nos aseguramos que 
-    # el usuario lea los warnings
-    root_logger.level = lvl
     if warned:
         print("Se acaban de mostrar warnings importantes que pueden " + 
               "modificar el comportamiento del programa")

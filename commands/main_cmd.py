@@ -18,6 +18,8 @@ from .show_cmd.show import get_show_cmd, show
 from .term_cmd.term import get_term_cmd, term
 from .publish_cmd.publish import get_publish_cmd, publish
 from .reused_definitions import def_reused_definitions
+# Imports para la funcion asociada al comando
+from program.platform import platform
 
 def get_main_cmd() -> Command:
     def_reused_definitions()
@@ -95,9 +97,6 @@ def get_main_cmd() -> Command:
 # -------------------------------------------------------------------- 
 main_logger = logging.getLogger(__name__)
 def main(args:list=[], options:dict={}, flags:list=[], nested_cmds:dict={}):
-    if "stop" in nested_cmds:
-        cmd_info = nested_cmds.pop("stop")
-        stop(**cmd_info)
     # Configuramos el nivel de logger
     if "-d" in flags:
         logLvl = logging.DEBUG
@@ -111,19 +110,18 @@ def main(args:list=[], options:dict={}, flags:list=[], nested_cmds:dict={}):
     root_logger.setLevel(logLvl)
     # Iniciamos el programa    
     main_logger.info(" Programa iniciado")
-    # Realizamos unas comprobaciones previas (ProgramError)
-    # try:
-    #     program.check_dependencies()
-    #     program.check_platform_updates()
-    # except ProgramError as err:
-    #     main_logger.critical(err); exit(1)
-    # # Ejecutamos la orden
-    # main_logger.debug(f" Ejecutando la orden : \n{args_as_json}")
-    # if "deploy" in nested_cmds:
-    #     ...
-    # # Actualizamos la plataforma
-    # platform.update_conexions()
-    # main_logger.info(" Programa finalizado")
+    if "deploy" in nested_cmds:
+        ...
+    if "stop" in nested_cmds:
+        cmd_info = nested_cmds.pop("stop")
+        stop(**cmd_info)
+
+    # Ejecutamos la orden
+    #main_logger.debug(f" Ejecutando la orden : \n{args_as_json}")
+    
+    # Actualizamos la plataforma
+    platform.update_conexions()
+    main_logger.info(" Programa finalizado")
     
     
 # --------------------------------------------------------------------
