@@ -119,7 +119,6 @@ def check_dependencies():
         ProgramError: Si lxd no esta instalado
     """
     system = plt.system()
-    program_logger.debug(f" {system} OS detected")
     if system != "Linux":
         err = (" Este programa solo funciona sobre " + 
                         f"Linux -> {system} detectado")

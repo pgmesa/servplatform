@@ -1,4 +1,5 @@
 
+import json
 import logging
 
 # Imports para definicion del comando
@@ -97,7 +98,16 @@ def get_main_cmd() -> Command:
 # -------------------------------------------------------------------- 
 main_logger = logging.getLogger(__name__)
 def main(args:list=[], options:dict={}, flags:list=[], nested_cmds:dict={}):
-    # Configuramos el nivel de logger
+    # Configuramos el nivel de logger del programa
+    """!!!IMPORTANTE¡¡¡:
+    Para que esta forma de configurar el root_logger funcione es 
+    necesario que los imports se hagan de la forma: 
+    ---> from module.loquesea.algo import ese_algo
+    ya que hacer 'import modulo.esemodulo' parece que es muy distinto
+    a la forma anterior y al interpretar el programa (antes de ejecutar)
+    se guarda la info del logger del otro fichero importado en ese 
+    momento (previo a la configuracion del root_logger en esta funcion) 
+    y no se hace en el momento de la ejecucion como con la forma 'from'"""
     if "-d" in flags:
         logLvl = logging.DEBUG
     elif "-w" in flags:
@@ -110,37 +120,54 @@ def main(args:list=[], options:dict={}, flags:list=[], nested_cmds:dict={}):
     root_logger.setLevel(logLvl)
     # Iniciamos el programa    
     main_logger.info(" Programa iniciado")
+    # Informamos de parametros pasados al programa/comando principal
+    nested_cmd_json = json.dumps(nested_cmds, indent=4, sort_keys=True)
+    msg = (f" Parametros introducidos:\nargs={args}, options={options}, " + 
+            f"flags={flags}\n{nested_cmd_json}")
+    main_logger.debug(msg)
+    # Miramos el comando introducido y ejecutamos la orden
     if "deploy" in nested_cmds:
-        ...
-    if "stop" in nested_cmds:
+        cmd_info = nested_cmds.pop("deploy")
+        deploy(**cmd_info)
+    elif "start" in nested_cmds:
+        cmd_info = nested_cmds.pop("start")
+        start(**cmd_info)
+    elif "stop" in nested_cmds:
         cmd_info = nested_cmds.pop("stop")
         stop(**cmd_info)
-
-    # Ejecutamos la orden
-    #main_logger.debug(f" Ejecutando la orden : \n{args_as_json}")
-    
-    # Actualizamos la plataforma
+    elif "pause" in nested_cmds: 
+        cmd_info = nested_cmds.pop("pause")
+        pause(**cmd_info)
+    elif "delete" in nested_cmds:
+        cmd_info = nested_cmds.pop("delete")
+        delete(**cmd_info)
+    elif "destroy" in nested_cmds:
+        cmd_info = nested_cmds.pop("destroy")
+        destroy(**cmd_info)
+    elif "servs" in nested_cmds:
+        cmd_info = nested_cmds.pop("servs")
+        servs(**cmd_info)
+    elif "client" in nested_cmds:
+        cmd_info = nested_cmds.pop("client")
+        client(**cmd_info)
+    elif "loadbal" in nested_cmds:
+        cmd_info = nested_cmds.pop("loadbal")
+        loadbal(**cmd_info)
+    elif "database" in nested_cmds:
+        cmd_info = nested_cmds.pop("database")
+        database(**cmd_info)
+    elif "repo" in nested_cmds:
+        cmd_info = nested_cmds.pop("repo")
+        repo(**cmd_info)
+    elif "show" in nested_cmds:
+        cmd_info = nested_cmds.pop("show")
+        show(**cmd_info)
+    elif "term" in nested_cmds:
+        cmd_info = nested_cmds.pop("term")
+        term(**cmd_info)
+    elif "publish" in nested_cmds:
+        cmd_info = nested_cmds.pop("publish")
+        publish(**cmd_info)
+    # Para finalizar actualizamos la plataforma
     platform.update_conexions()
     main_logger.info(" Programa finalizado")
-    
-    
-# --------------------------------------------------------------------
-def _config_verbosity(flags:list):
-    """Configura el nivel de verbosidad del programa (nivel de los
-    logger de los diferentes ficheros que conforman el programa) en
-    funcion de los flags que haya pasado el usuario en la linea de 
-    comandos. 
-    !!!IMPORTANTE¡¡¡:
-    Para que esta forma de configurar el root_logger funcione es 
-    necesario que los imports se hagan de la forma: 
-    ---> from module.loquesea.algo import ese_algo
-    ya que hacer 'import modulo.esemodulo' parece que es muy distinto
-    a la forma anterior y al interpretar el programa (antes de ejecutar)
-    se guarda la info del logger del otro fichero importado en ese 
-    momento (previo a la configuracion del root_logger en esta funcion) 
-    y no se hace en el momento de la ejecucion como con la forma 'from'
-
-    Args:
-        flags (list): Flags que se han pasado en la linea de comandos
-    """
-    
