@@ -17,8 +17,6 @@
 # - logger.critical():
 # cuando un error impida la continuacion de la ejecucion del programa 
 # --------------------------------------------------------------------
-from commands.main_cmd import get_main_cmd, main as servplatform 
-from dependencies.cli.cli import Cli
 from dependencies.utils.decorators import timer
 # --------------------------------------------------------------------
 @timer
@@ -58,6 +56,7 @@ if __name__ == "__main__":
     from dependencies.cli.cli import Cli, CmdLineError
     from program import program
     from program.program import ProgramError
-    from program.platform import platform
+    from commands.main_cmd import get_main_cmd, main as servplatform 
+    from dependencies.cli.cli import Cli
     main()
 # --------------------------------------------------------------------
