@@ -18,37 +18,26 @@ import threading
 # Ubicacion relativa del registro        
 REL_PATH = ".register"
 # Candando para evitar problemas de concurrencia accediendo al registro
-reg_lock = threading.Lock()
+reg_lock = threading.RLock()
 # --------------------------------------------------------------------
-# Decorador para bloquear las funciones que puedan llegar a sufrir 
-# problemas de concurrencia
-def lock(func):
-    def locked(*args, **opt_args):
-        # Otra opcion es usar "with reg_lock:"
-        reg_lock.acquire()
-        output = func(*args, **opt_args)
-        reg_lock.release()
-        return output
-    return locked
-
-@lock
 def _save(register:dict):
-    with open(REL_PATH, "wb") as file:
-        pickle.dump(register, file)
+    with reg_lock:
+        with open(REL_PATH, "wb") as file:
+            pickle.dump(register, file)
         
-@lock
 def _load():
-    with open(REL_PATH, "rb") as file:
-        return pickle.load(file)
+    with reg_lock:
+        with open(REL_PATH, "rb") as file:
+            return pickle.load(file)
 
-@lock
 def _remove():
-    if os.path.exists(REL_PATH): 
-        os.remove(REL_PATH)
+    with reg_lock:
+        if os.path.exists(REL_PATH): 
+            os.remove(REL_PATH)
 
-@lock     
 def _reg_exists():
-    return os.path.exists(REL_PATH)
+    with reg_lock:
+        return os.path.exists(REL_PATH)
 
 # -------------------------------------------------------------------- 
 def config_location(path, name=".register"):
@@ -149,7 +138,7 @@ def load(register_id:any=None) -> object:
         object: Devuelve el objeto almacenado en la pagina (pueden
         ser tambien iterables)
     """
-    try:
+    if _reg_exists():
         register = _load()
         if register_id == None:
             return register
@@ -158,7 +147,7 @@ def load(register_id:any=None) -> object:
                 return register[register_id]
             else:
                 return None
-    except FileNotFoundError:
+    else:
         return None
 
 # -------------------------------------------------------------------- 
