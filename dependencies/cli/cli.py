@@ -1,4 +1,6 @@
 
+from pathlib import Path
+
 from .aux_classes import Command, Flag
 from .cli_utils import format_str
 
@@ -67,10 +69,13 @@ class Cli:
                 alguno)
         """
         processed_line = {}
-        if self.main_cmd.name == args.pop(0):
+        p_name = args.pop(0)
+        if "/" in p_name or "\\" in p_name:
+            p_name =  Path(p_name).name
+        if self.main_cmd.name == p_name:
             processed_line = self._process_cmd(self.main_cmd, args)
         else:
-            raise CmdLineError(" El comando main introducido es incorrecto")
+            raise CmdLineError(f" El comando main introducido '{p_name}' es incorrecto ")
         return processed_line
     
     def _process_cmd(self, cmd:Command, args:list):
